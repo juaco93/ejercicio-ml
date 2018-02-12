@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.google.gson.Gson;
@@ -32,6 +33,7 @@ public class BankSelection extends AppCompatActivity {
     private MercadoLibreAPI mMercadoLibreApi;
 
     private Spinner spSeleccionarBanco;
+    private ProgressBar pbCardIssuers;
 
     private payment_methods mPayment_method;
     private String amount;
@@ -42,6 +44,8 @@ public class BankSelection extends AppCompatActivity {
         setContentView(R.layout.activity_card_issuers);
 
         spSeleccionarBanco = (Spinner) findViewById(R.id.spBanco);
+        pbCardIssuers = (ProgressBar) findViewById(R.id.pbCardIssuers);
+        pbCardIssuers.setVisibility(View.INVISIBLE);
 
         //// RETROFIT
         // Interceptor para log del Request
@@ -72,6 +76,7 @@ public class BankSelection extends AppCompatActivity {
 
     private void getCardIssuers(){
         Log.d("methods", "Recuperando card_issuers desde el servidor");
+        pbCardIssuers.setVisibility(View.VISIBLE);
 
         // Realizar petición HTTP
         Call<List<CardIssuer>> call = mMercadoLibreApi.getCardIssuers(Config.API_KEY, mPayment_method.getId());
@@ -86,37 +91,25 @@ public class BankSelection extends AppCompatActivity {
                             .contentType()
                             .subtype()
                             .equals("json")) {
-
                         Log.d("methods", response.errorBody().toString());
-                        //ApiError apiError = ApiError.fromResponseBody(response.errorBody());
-
-                        //error = apiError.getMessage();
-                        //Log.d(TAG, apiError.getDeveloperMessage());
                     } else {
                         Log.d("methods", response.errorBody().toString());
-                        /*try {
-                            // Reportar causas de error no relacionado con la API
-                            Log.d(TAG, response.errorBody().string());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }*/
                     }
-                    //showLoadingIndicator(false);
-                    //showErrorMessage(error);
+                    pbCardIssuers.setVisibility(View.INVISIBLE);
                     Log.d("methods", response.message());
                     Log.d("methods", response.raw().toString());
                     return;
                 }
 
+                // Correcto, ocultamos progressbar
+                pbCardIssuers.setVisibility(View.INVISIBLE);
                 cargarSpinnerBanco(response.body());
-
             }
 
             @Override
             public void onFailure(Call<List<CardIssuer>> call, Throwable t) {
-                //showLoadingIndicator(false);
                 Log.d("methods", "Petición rechazada:" + t.getMessage());
-                //showErrorMessage("Error de comunicación");
+                pbCardIssuers.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -132,7 +125,6 @@ public class BankSelection extends AppCompatActivity {
     public void irASeleccionCuotas(View v){
         Intent intent= new Intent(this,CuotasSelection.class);
         CardIssuer banco = (CardIssuer) spSeleccionarBanco.getSelectedItem();
-        String bancoElegido = banco.getId();
         intent.putExtra("CardIssuer",(new Gson()).toJson(banco));
         intent.putExtra("payment_method",(new Gson()).toJson(mPayment_method));
         intent.putExtra("amount",amount);

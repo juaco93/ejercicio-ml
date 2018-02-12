@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.google.gson.Gson;
@@ -34,6 +35,8 @@ public class CuotasSelection extends AppCompatActivity {
     private MercadoLibreAPI mMercadoLibreApi;
 
     private Spinner spCuotasSelection;
+    private ProgressBar pbCuotasSelection;
+
 
     private payment_methods mPayment_method;
     private String amount;
@@ -45,6 +48,8 @@ public class CuotasSelection extends AppCompatActivity {
         setContentView(R.layout.activity_cuotas_selection);
 
         spCuotasSelection = (Spinner) findViewById(R.id.spCuotas);
+        pbCuotasSelection = (ProgressBar) findViewById(R.id.pbCuotasSelection);
+        pbCuotasSelection.setVisibility(View.INVISIBLE);
 
         //// RETROFIT
         // Interceptor para log del Request
@@ -79,6 +84,7 @@ public class CuotasSelection extends AppCompatActivity {
 
     private void getInstallments(){
         Log.d("methods", "Recuperando card_issuers desde el servidor");
+        pbCuotasSelection.setVisibility(View.VISIBLE);
 
         // Realizar petición HTTP
         Call<List<Installment>> call = mMercadoLibreApi.getInstallments(Config.API_KEY,amount,mPayment_method.getId(),mCardIssuer.getId());
@@ -89,42 +95,24 @@ public class CuotasSelection extends AppCompatActivity {
                 if (!response.isSuccessful()) {
                     // Procesar error de API
                     String error = "Ha ocurrido un error. Contacte al administrador";
-                    if (response.errorBody()
-                            .contentType()
-                            .subtype()
-                            .equals("json")) {
 
-                        Log.d("methods", response.errorBody().toString());
-                        //ApiError apiError = ApiError.fromResponseBody(response.errorBody());
+                    pbCuotasSelection.setVisibility(View.INVISIBLE);
 
-                        //error = apiError.getMessage();
-                        //Log.d(TAG, apiError.getDeveloperMessage());
-                    } else {
-                        Log.d("methods", response.errorBody().toString());
-                        /*try {
-                            // Reportar causas de error no relacionado con la API
-                            Log.d(TAG, response.errorBody().string());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }*/
-                    }
-                    //showLoadingIndicator(false);
-                    //showErrorMessage(error);
                     Log.d("methods", response.message());
                     Log.d("methods", response.raw().toString());
                     return;
                 }
 
                 if(response.body().size()>0){
+                    pbCuotasSelection.setVisibility(View.INVISIBLE);
                     cargarSpinnerCuotas(response.body().get(0).getPayerCosts());
                 }
             }
 
             @Override
             public void onFailure(Call<List<Installment>> call, Throwable t) {
-                //showLoadingIndicator(false);
                 Log.d("methods", "Petición rechazada:" + t.getMessage());
-                //showErrorMessage("Error de comunicación");
+                pbCuotasSelection.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -132,8 +120,6 @@ public class CuotasSelection extends AppCompatActivity {
     private void cargarSpinnerCuotas(List<PayerCost> cuotas) {
         AdapterCuotas adapter;
         adapter = new AdapterCuotas(this, cuotas);
-
-        //setting adapter to spinner
         spCuotasSelection.setAdapter(adapter);
     }
 

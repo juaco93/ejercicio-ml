@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.google.gson.Gson;
@@ -30,6 +31,7 @@ public class PaymentMethodSelection extends AppCompatActivity {
     private MercadoLibreAPI mMercadoLibreApi;
 
     private Spinner spMetodoPago;
+    private ProgressBar pbPaymentMethodSelection;
 
     private String amount;
 
@@ -39,6 +41,8 @@ public class PaymentMethodSelection extends AppCompatActivity {
         setContentView(R.layout.activity_payment_method_selection);
 
         spMetodoPago = (Spinner) findViewById(R.id.spMetodoPago);
+        pbPaymentMethodSelection = (ProgressBar) findViewById(R.id.pbPaymentSelection);
+        pbPaymentMethodSelection.setVisibility(View.INVISIBLE);
 
         //// RETROFIT
         // Interceptor para log del Request
@@ -68,6 +72,8 @@ public class PaymentMethodSelection extends AppCompatActivity {
     private void getPayment_methods(){
         Log.d("methods", "Recuperando payment_methods desde el servidor");
 
+        pbPaymentMethodSelection.setVisibility(View.VISIBLE);
+
         // Realizar petición HTTP
         Call<List<payment_methods>> call = mMercadoLibreApi.getPaymentMethods(Config.API_KEY);
         call.enqueue(new Callback<List<payment_methods>>() {
@@ -81,67 +87,33 @@ public class PaymentMethodSelection extends AppCompatActivity {
                             .contentType()
                             .subtype()
                             .equals("json")) {
-
                         Log.d("methods", response.errorBody().toString());
-                        //ApiError apiError = ApiError.fromResponseBody(response.errorBody());
-
-                        //error = apiError.getMessage();
-                        //Log.d(TAG, apiError.getDeveloperMessage());
                     } else {
                         Log.d("methods", response.errorBody().toString());
-                        /*try {
-                            // Reportar causas de error no relacionado con la API
-                            Log.d(TAG, response.errorBody().string());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }*/
                     }
-                    //showLoadingIndicator(false);
-                    //showErrorMessage(error);
+
+                    pbPaymentMethodSelection.setVisibility(View.INVISIBLE);
                     Log.d("methods", response.message());
                     Log.d("methods", response.raw().toString());
                     return;
                 }
 
+                // Respuesta correcta del servidor
+                pbPaymentMethodSelection.setVisibility(View.INVISIBLE);
                 cargarSpinnerMetodosPago(response.body());
-
-
-/*
-                serverDirecciones = response.body().getDatos();
-                Log.d("direcciones", "bien, recibido: " + response.body().getDatos().toString());
-                if (serverDirecciones.size() > 0) {
-                    // Mostrar lista de ordenes
-                    mostrarDirecciones(serverDirecciones);
-                    Log.d("direcciones","obtuvimos nueva direccion del fragment, pasamos a habilitar el boton");
-                    chequearDireccion();
-                } else {
-                    // Mostrar empty state
-                    mostrarDireccionesEmpty();
-                }
-                */
             }
 
             @Override
             public void onFailure(Call<List<payment_methods>> call, Throwable t) {
-                //showLoadingIndicator(false);
                 Log.d("methods", "Petición rechazada:" + t.getMessage());
-                //showErrorMessage("Error de comunicación");
+                pbPaymentMethodSelection.setVisibility(View.INVISIBLE);
             }
         });
     }
 
     private void cargarSpinnerMetodosPago(List<payment_methods> metodosDePago) {
-
-        // String[] items = new String[direccionesServer.size()];
-        String[] items = new String[metodosDePago.size()+1];
-
-        //Spinner spinner = (Spinner) findViewById(R.id.spinner1);
-        //ArrayAdapter<String> adapter;
         AdapterMetodoPago adapter;
         adapter = new AdapterMetodoPago(this, metodosDePago);
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        //setting adapter to spinner
         spMetodoPago.setAdapter(adapter);
 
     }

@@ -12,6 +12,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.jadevelopment.ejercicioml.R;
@@ -37,7 +38,7 @@ public class MontoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_monto);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarMonto);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarMonto);
         //setSupportActionBar(toolbar);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -93,9 +94,21 @@ public class MontoActivity extends AppCompatActivity {
     }
 
     public void goToPaymentMethodSelection(View V){
-        Intent intent = new Intent(this, PaymentMethodSelection.class);
-        intent.putExtra("amount",monto);
-        startActivity(intent);
+        if(chequearMonto()) {
+            Intent intent = new Intent(this, PaymentMethodSelection.class);
+            intent.putExtra("amount", monto);
+            startActivity(intent);
+        }else{
+            Toast.makeText(this,"Ingresá un monto válido!",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean chequearMonto(){
+        if(!txtMonto.getText().toString().isEmpty()){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public void mostrarMensajeResumen(String monto, String metodo_pago, String banco, String cuotas){

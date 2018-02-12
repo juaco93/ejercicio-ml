@@ -1,62 +1,54 @@
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/CarritoNest_scrollview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginEnd="10dp"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    android:layout_marginStart="10dp"
+    android:paddingTop="50dp"
+    tools:context="com.jadevelopment.ejercicioml.ui.PaymentMethodSelection">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <TextView
+        android:id="@+id/lbSeleccionMetodoPago"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Seleccioná tu medio de pago:" />
+
+    <Spinner
+        android:id="@+id/spMetodoPago"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="com.jadevelopment.ejercicioml.ui.PaymentMethodSelection">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lbSeleccionMetodoPago"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:textAlignment="center"
+        android:textColor="@color/colorTexto"
+        android:textSize="24sp" />
 
+    <Button
+        android:id="@+id/btnContinuar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/spMetodoPago"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="2dp"
+        android:background="@color/colorAccent"
+        android:onClick="irASeleccionBanco"
+        android:text="Continuar"
+        android:textColor="@android:color/white" />
 
-        <RelativeLayout
-            android:id="@+id/rlSeleccionMetodoPago"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="50dp">
-
-            <TextView
-                android:id="@+id/lbSeleccionMetodoPago"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:text="Seleccioná tu medio de pago:" />
-
-            <Spinner
-                android:id="@+id/spMetodoPago"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/lbSeleccionMetodoPago"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:ems="10"
-                android:inputType="numberDecimal"
-                android:textAlignment="center"
-                android:textColor="@color/colorTexto"
-                android:textSize="24sp" />
-
-            <Button
-                android:id="@+id/btnContinuar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/spMetodoPago"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:background="@color/colorAccent"
-                android:onClick="irASeleccionBanco"
-                android:text="Continuar"
-                android:textColor="@android:color/white" />
-
-        </RelativeLayout>
-
-    </RelativeLayout>
-</android.support.v4.widget.NestedScrollView>
+    <ProgressBar
+        android:id="@+id/pbPaymentSelection"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/btnContinuar"
+        android:indeterminate="true"
+        android:visibility="gone"></ProgressBar>
+</RelativeLayout>
