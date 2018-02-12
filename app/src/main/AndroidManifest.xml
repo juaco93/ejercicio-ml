@@ -18,7 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.PaymentMethodSelection"></activity>
+        <activity android:name=".ui.PaymentMethodSelection" />
+        <activity android:name=".ui.BankSelection" />
+        <activity android:name=".ui.CuotasSelection" />
     </application>
 
 </manifest>

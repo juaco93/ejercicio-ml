@@ -17,25 +17,25 @@
 
 
         <RelativeLayout
-            android:id="@+id/rlSeleccionMetodoPago"
+            android:id="@+id/rlSeleccionarBanco"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="50dp">
 
             <TextView
-                android:id="@+id/lbSeleccionMetodoPago"
+                android:id="@+id/lbSeleccionarBanco"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
-                android:text="Seleccioná tu medio de pago:" />
+                android:text="Seleccioná tu Banco:" />
 
             <Spinner
-                android:id="@+id/spMetodoPago"
+                android:id="@+id/spBanco"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/lbSeleccionMetodoPago"
+                android:layout_below="@+id/lbSeleccionarBanco"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:ems="10"
@@ -48,11 +48,11 @@
                 android:id="@+id/btnContinuar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/spMetodoPago"
+                android:layout_below="@+id/spBanco"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:background="@color/colorAccent"
-                android:onClick="irASeleccionBanco"
+                android:onClick="irASeleccionCuotas"
                 android:text="Continuar"
                 android:textColor="@android:color/white" />
 

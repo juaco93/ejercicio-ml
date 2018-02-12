@@ -1,5 +1,8 @@
 package com.jadevelopment.ejercicioml.data.api;
 
+import com.jadevelopment.ejercicioml.data.model.CardIssuer;
+import com.jadevelopment.ejercicioml.data.model.Installment;
+import com.jadevelopment.ejercicioml.data.model.PayerCost;
 import com.jadevelopment.ejercicioml.data.model.payment_methods;
 
 import java.util.List;
@@ -18,5 +21,19 @@ public interface MercadoLibreAPI {
     @GET("payment_methods")
     Call<List<payment_methods>> getPaymentMethods(
             @Query(value = "public_key", encoded = true) String public_key
+    );
+
+    @GET("payment_methods/card_issuers")
+    Call<List<CardIssuer>> getCardIssuers(
+            @Query(value = "public_key", encoded = true) String public_key,
+            @Query(value = "payment_method_id", encoded = true) String payment_method_id
+    );
+
+    @GET("payment_methods/installments")
+    Call<List<Installment>> getInstallments(
+            @Query(value = "public_key", encoded = true) String public_key,
+            @Query(value = "amount", encoded = true) String amount,
+            @Query(value = "payment_method_id", encoded = true) String payment_method_id,
+            @Query(value = "issuer.id", encoded = true) String issuer_id
     );
 }

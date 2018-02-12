@@ -1,40 +1,32 @@
 package com.jadevelopment.ejercicioml.data.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
-import android.media.Image;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.jadevelopment.ejercicioml.R;
-import com.jadevelopment.ejercicioml.data.model.payment_methods;
+import com.jadevelopment.ejercicioml.data.model.CardIssuer;
+import com.jadevelopment.ejercicioml.data.model.Installment;
+import com.jadevelopment.ejercicioml.data.model.PayerCost;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Joaquin on 4/2/2018.
+ * Created by Joaquin on 11/2/2018.
  */
 
-public class AdapterMetodoPago extends ArrayAdapter<payment_methods>
+public class AdapterCuotas extends ArrayAdapter<PayerCost>
 {
     private Context context;
 
-    List<payment_methods> datos = null;
+    List<PayerCost> datos = null;
 
-    public AdapterMetodoPago(Context context, List<payment_methods> datos)
+    public AdapterCuotas(Context context, List<PayerCost> datos)
     {
         //se debe indicar el layout para el item que seleccionado (el que se muestra sobre el botón del botón)
         super(context, R.layout.spinner_list_item_metodo_pago, datos);
@@ -46,22 +38,12 @@ public class AdapterMetodoPago extends ArrayAdapter<payment_methods>
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        ImageView imagen;
 
         if (convertView == null)
         {
             convertView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.spinner_list_item_metodo_pago,null);
         }
-        ((TextView) convertView.findViewById(R.id.texto)).setText(datos.get(position).getName());
-
-        imagen = convertView.findViewById(R.id.icono);
-        //Carga de los logos de las empresas con Picasso
-        Picasso
-                .with(context)
-                .load(datos.get(position).getThumbnail())
-                .resize(62, 20)
-                .centerInside()
-                .into(imagen);
+        ((TextView) convertView.findViewById(R.id.texto)).setText(datos.get(position).getRecommendedMessage());
 
         return convertView;
     }
@@ -80,48 +62,29 @@ public class AdapterMetodoPago extends ArrayAdapter<payment_methods>
 
         if (row.getTag() == null)
         {
-            MetodoPagoHolder holder = new MetodoPagoHolder();
-            holder.setIcono((ImageView) row.findViewById(R.id.icono));
+            InstallmentHolder holder = new InstallmentHolder();
             holder.setTextView((TextView) row.findViewById(R.id.texto));
             row.setTag(holder);
         }
 
         //rellenamos el layout con los datos de la fila que se está procesando
-        payment_methods metodos = datos.get(position);
-        ((MetodoPagoHolder) row.getTag()).getTextView().setText(metodos.getName());
-        //((MetodoPagoHolder) row.getTag()).getIcono().setImageResource(metodos.getThumbnail());
+        PayerCost banco = datos.get(position);
 
-        Picasso
-                .with(context)
-                .load(datos.get(position).getThumbnail())
-                .resize(62, 20)
-                .centerInside()
-                .into(((MetodoPagoHolder) row.getTag()).getIcono());
+        ((InstallmentHolder) row.getTag()).getTextView().setText(banco.getRecommendedMessage());
+
 
         return row;
     }
 
-    private static class MetodoPagoHolder
+    private static class InstallmentHolder
     {
 
-        private ImageView icono;
         private TextView textView;
-
-        public ImageView getIcono()
-        {
-            return icono;
-        }
-
-        public void setIcono(ImageView icono)
-        {
-            this.icono = icono;
-        }
 
         public TextView getTextView()
         {
             return textView;
         }
-
         public void setTextView(TextView textView)
         {
             this.textView = textView;

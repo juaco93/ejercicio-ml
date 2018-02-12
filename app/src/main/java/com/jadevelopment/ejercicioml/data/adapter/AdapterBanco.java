@@ -1,40 +1,31 @@
 package com.jadevelopment.ejercicioml.data.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
-import android.media.Image;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.jadevelopment.ejercicioml.R;
+import com.jadevelopment.ejercicioml.data.model.CardIssuer;
 import com.jadevelopment.ejercicioml.data.model.payment_methods;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Joaquin on 4/2/2018.
+ * Created by Joaquin on 11/2/2018.
  */
 
-public class AdapterMetodoPago extends ArrayAdapter<payment_methods>
+public class AdapterBanco extends ArrayAdapter<CardIssuer>
 {
     private Context context;
 
-    List<payment_methods> datos = null;
+    List<CardIssuer> datos = null;
 
-    public AdapterMetodoPago(Context context, List<payment_methods> datos)
+    public AdapterBanco(Context context, List<CardIssuer> datos)
     {
         //se debe indicar el layout para el item que seleccionado (el que se muestra sobre el botón del botón)
         super(context, R.layout.spinner_list_item_metodo_pago, datos);
@@ -80,15 +71,15 @@ public class AdapterMetodoPago extends ArrayAdapter<payment_methods>
 
         if (row.getTag() == null)
         {
-            MetodoPagoHolder holder = new MetodoPagoHolder();
+            BancoHolder holder = new BancoHolder();
             holder.setIcono((ImageView) row.findViewById(R.id.icono));
             holder.setTextView((TextView) row.findViewById(R.id.texto));
             row.setTag(holder);
         }
 
         //rellenamos el layout con los datos de la fila que se está procesando
-        payment_methods metodos = datos.get(position);
-        ((MetodoPagoHolder) row.getTag()).getTextView().setText(metodos.getName());
+        CardIssuer banco = datos.get(position);
+        ((BancoHolder) row.getTag()).getTextView().setText(banco.getName());
         //((MetodoPagoHolder) row.getTag()).getIcono().setImageResource(metodos.getThumbnail());
 
         Picasso
@@ -96,12 +87,12 @@ public class AdapterMetodoPago extends ArrayAdapter<payment_methods>
                 .load(datos.get(position).getThumbnail())
                 .resize(62, 20)
                 .centerInside()
-                .into(((MetodoPagoHolder) row.getTag()).getIcono());
+                .into(((BancoHolder) row.getTag()).getIcono());
 
         return row;
     }
 
-    private static class MetodoPagoHolder
+    private static class BancoHolder
     {
 
         private ImageView icono;

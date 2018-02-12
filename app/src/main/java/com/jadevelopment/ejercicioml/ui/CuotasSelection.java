@@ -11,8 +11,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jadevelopment.ejercicioml.R;
 import com.jadevelopment.ejercicioml.data.Config;
-import com.jadevelopment.ejercicioml.data.adapter.AdapterMetodoPago;
+import com.jadevelopment.ejercicioml.data.adapter.AdapterBanco;
+import com.jadevelopment.ejercicioml.data.adapter.AdapterCuotas;
 import com.jadevelopment.ejercicioml.data.api.MercadoLibreAPI;
+import com.jadevelopment.ejercicioml.data.model.CardIssuer;
+import com.jadevelopment.ejercicioml.data.model.Installment;
+import com.jadevelopment.ejercicioml.data.model.PayerCost;
 import com.jadevelopment.ejercicioml.data.model.payment_methods;
 
 import java.util.List;
@@ -25,20 +29,22 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class PaymentMethodSelection extends AppCompatActivity {
+public class CuotasSelection extends AppCompatActivity {
     private Retrofit mRestAdapter;
     private MercadoLibreAPI mMercadoLibreApi;
 
-    private Spinner spMetodoPago;
+    private Spinner spCuotasSelection;
 
+    private payment_methods mPayment_method;
     private String amount;
+    private CardIssuer mCardIssuer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_payment_method_selection);
+        setContentView(R.layout.activity_cuotas_selection);
 
-        spMetodoPago = (Spinner) findViewById(R.id.spMetodoPago);
+        spCuotasSelection = (Spinner) findViewById(R.id.spCuotas);
 
         //// RETROFIT
         // Interceptor para log del Request
@@ -60,20 +66,26 @@ public class PaymentMethodSelection extends AppCompatActivity {
         // Crear conexión a la API de MercadoLibre
         mMercadoLibreApi = mRestAdapter.create(MercadoLibreAPI.class);
 
-        amount = getIntent().getStringExtra("amount");
 
-        getPayment_methods();
+        if(getIntent().getStringExtra("amount")!=null)
+            amount = getIntent().getStringExtra("amount");
+        if(getIntent().getStringExtra("payment_method")!=null)
+            mPayment_method = (new Gson()).fromJson((getIntent().getStringExtra("payment_method")),payment_methods.class);
+        if(getIntent().getStringExtra("CardIssuer")!=null)
+            mCardIssuer = (new Gson()).fromJson((getIntent().getStringExtra("CardIssuer")),CardIssuer.class);
+
+        getInstallments();
     }
 
-    private void getPayment_methods(){
-        Log.d("methods", "Recuperando payment_methods desde el servidor");
+    private void getInstallments(){
+        Log.d("methods", "Recuperando card_issuers desde el servidor");
 
         // Realizar petición HTTP
-        Call<List<payment_methods>> call = mMercadoLibreApi.getPaymentMethods(Config.API_KEY);
-        call.enqueue(new Callback<List<payment_methods>>() {
+        Call<List<Installment>> call = mMercadoLibreApi.getInstallments(Config.API_KEY,amount,mPayment_method.getId(),mCardIssuer.getId());
+        call.enqueue(new Callback<List<Installment>>() {
             @Override
-            public void onResponse(Call<List<payment_methods>> call,
-                                   Response<List<payment_methods>> response) {
+            public void onResponse(Call<List<Installment>> call,
+                                   Response<List<Installment>> response) {
                 if (!response.isSuccessful()) {
                     // Procesar error de API
                     String error = "Ha ocurrido un error. Contacte al administrador";
@@ -103,26 +115,13 @@ public class PaymentMethodSelection extends AppCompatActivity {
                     return;
                 }
 
-                cargarSpinnerMetodosPago(response.body());
-
-
-/*
-                serverDirecciones = response.body().getDatos();
-                Log.d("direcciones", "bien, recibido: " + response.body().getDatos().toString());
-                if (serverDirecciones.size() > 0) {
-                    // Mostrar lista de ordenes
-                    mostrarDirecciones(serverDirecciones);
-                    Log.d("direcciones","obtuvimos nueva direccion del fragment, pasamos a habilitar el boton");
-                    chequearDireccion();
-                } else {
-                    // Mostrar empty state
-                    mostrarDireccionesEmpty();
+                if(response.body().size()>0){
+                    cargarSpinnerCuotas(response.body().get(0).getPayerCosts());
                 }
-                */
             }
 
             @Override
-            public void onFailure(Call<List<payment_methods>> call, Throwable t) {
+            public void onFailure(Call<List<Installment>> call, Throwable t) {
                 //showLoadingIndicator(false);
                 Log.d("methods", "Petición rechazada:" + t.getMessage());
                 //showErrorMessage("Error de comunicación");
@@ -130,27 +129,22 @@ public class PaymentMethodSelection extends AppCompatActivity {
         });
     }
 
-    private void cargarSpinnerMetodosPago(List<payment_methods> metodosDePago) {
-
-        // String[] items = new String[direccionesServer.size()];
-        String[] items = new String[metodosDePago.size()+1];
-
-        //Spinner spinner = (Spinner) findViewById(R.id.spinner1);
-        //ArrayAdapter<String> adapter;
-        AdapterMetodoPago adapter;
-        adapter = new AdapterMetodoPago(this, metodosDePago);
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    private void cargarSpinnerCuotas(List<PayerCost> cuotas) {
+        AdapterCuotas adapter;
+        adapter = new AdapterCuotas(this, cuotas);
 
         //setting adapter to spinner
-        spMetodoPago.setAdapter(adapter);
-
+        spCuotasSelection.setAdapter(adapter);
     }
 
-    public void irASeleccionBanco(View v){
-        Intent intent= new Intent(this,BankSelection.class);
-        payment_methods metodo = (payment_methods) spMetodoPago.getSelectedItem();
-        intent.putExtra("payment_method",(new Gson()).toJson(metodo));
+    public void irAInicio(View v){
+        Intent intent= new Intent(this,MontoActivity.class);
+        PayerCost cuota = (PayerCost) spCuotasSelection.getSelectedItem();
+        intent.putExtra("PayerCost",(new Gson()).toJson(cuota));
+        intent.putExtra("CardIssuer",(new Gson()).toJson(mCardIssuer));
+        intent.putExtra("payment_method",(new Gson()).toJson(mPayment_method));
         intent.putExtra("amount",amount);
+
         startActivity(intent);
     }
 }
